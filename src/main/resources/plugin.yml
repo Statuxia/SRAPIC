@@ -1,0 +1,7 @@
+name: SRAPIC
+version: '${version}'
+main: me.statuxia.srapic.SRAPIC
+api-version: 1.19
+load: STARTUP
+authors: [ Statuxia ]
+description: Server REST API-Cable is used to collect and return information about the server and players in the form of a public API
