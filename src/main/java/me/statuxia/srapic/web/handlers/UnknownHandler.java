@@ -14,10 +14,11 @@ public class UnknownHandler extends DefaultHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        String endpoint = exchange.getRequestURI().getPath();
         JSONObject object = new JSONObject();
         object.put("error-code", 404);
         object.put("message", "Method not found");
 
-        sendResponse(exchange, 404, object.toString().getBytes(StandardCharsets.UTF_8));
+        sendResponse(exchange, 404, object.toString().getBytes(StandardCharsets.UTF_8), endpoint);
     }
 }

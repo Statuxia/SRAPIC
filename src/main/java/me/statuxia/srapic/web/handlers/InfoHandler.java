@@ -16,8 +16,15 @@ public class InfoHandler extends DefaultHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        String endpoint = exchange.getRequestURI().getPath();
+        Cache cache = cachedContent.get(endpoint);
+        if (cache != null && !cache.isOld()) {
+            sendResponse(exchange, cache.code, cache.content, endpoint);
+            return;
+        }
+
         JSONObject object = new JSONObject();
-        Server server = SRAPIC.getSRAPIC().getServer();
+        Server server = SRAPIC.getINSTANCE().getServer();
 
         object.put("name", server.getName());
         object.put("motd", server.getMotd());
@@ -30,6 +37,6 @@ public class InfoHandler extends DefaultHandler {
         object.put("view-distance", server.getViewDistance());
         object.put("world-size", server.getMaxWorldSize());
 
-        sendResponse(exchange, 200, object.toString().getBytes(StandardCharsets.UTF_8));
+        sendResponse(exchange, 200, object.toString().getBytes(StandardCharsets.UTF_8), endpoint);
     }
 }

@@ -22,12 +22,18 @@ public class WorldHandler extends DefaultHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String endpoint = exchange.getRequestURI().getPath();
-        Server server = SRAPIC.getSRAPIC().getServer();
+        Cache cache = cachedContent.get(endpoint);
+        if (cache != null && !cache.isOld()) {
+            sendResponse(exchange, cache.code, cache.content, endpoint);
+            return;
+        }
+
+        Server server = SRAPIC.getINSTANCE().getServer();
         JSONObject object = null;
 
         List<String> worlds = server.getWorlds().stream().map(World::getName).toList();
         for (String stringWorld : worlds) {
-            if ((this.endpoint + "/"+ stringWorld).equals(endpoint)) {
+            if ((this.endpoint + "/" + stringWorld).equals(endpoint)) {
                 World world = server.getWorld(stringWorld);
                 if (world == null) {
                     continue;
@@ -42,7 +48,7 @@ public class WorldHandler extends DefaultHandler {
             object.put("worlds", server.getWorlds().stream().map(World::getName).collect(Collectors.toList()));
         }
 
-        sendResponse(exchange, 200, object.toString().getBytes(StandardCharsets.UTF_8));
+        sendResponse(exchange, 200, object.toString().getBytes(StandardCharsets.UTF_8), endpoint);
     }
 
     private JSONObject getWorldInfo(World world) {
